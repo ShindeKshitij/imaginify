@@ -33,7 +33,7 @@ export async function POST(req: Request) {
   // Get the body
   const payload = await req.json();
   const body = JSON.stringify(payload);
-
+  
   // Create a new Svix instance with your secret.
   const wh = new Webhook(WEBHOOK_SECRET);
 
@@ -46,6 +46,7 @@ export async function POST(req: Request) {
       "svix-timestamp": svix_timestamp,
       "svix-signature": svix_signature,
     }) as WebhookEvent;
+    
   } catch (err) {
     console.error("Error verifying webhook:", err);
     return new Response("Error occured", {
@@ -57,6 +58,11 @@ export async function POST(req: Request) {
   const { id } = evt.data;
   const eventType = evt.type;
 
+
+  console.log(`Webhook with and ID of ${id} and type of ${eventType}`);
+  console.log("Webhook body:", body);
+
+  
   // CREATE
   if (eventType === "user.created") {
     const { id, email_addresses, image_url, first_name, last_name, username } = evt.data;
@@ -109,8 +115,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ message: "OK", user: deletedUser });
   }
 
-  console.log(`Webhook with and ID of ${id} and type of ${eventType}`);
-  console.log("Webhook body:", body);
+  
 
   return new Response("", { status: 200 });
 }
